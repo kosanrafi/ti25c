@@ -33,7 +33,7 @@ const skillList = computed(() =>
         <svg class="h-8 w-8 text-white/70" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.6"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.5 20.25a7.5 7.5 0 0 1 15 0" /></svg>
       </div>
       <div class="w-full rounded-lg bg-black/45 px-2 py-2 backdrop-blur-sm">
-        <p class="truncate text-sm font-semibold text-white">{{ data.name }}</p>
+        <p class="line-clamp-2 text-[13px] font-semibold leading-snug text-white">{{ data.name }}</p>
         <span class="mt-1 inline-block rounded-full bg-flame-500/20 px-2 py-0.5 text-[10px] font-semibold tracking-wide text-flame-300">{{ data.role || 'Mahasiswa' }}</span>
       </div>
     </button>

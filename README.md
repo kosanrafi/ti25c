@@ -6,7 +6,7 @@ Website Teknik Informatika 25 C (Universitas Perjuangan Tasikmalaya), dibangun d
 - **Tailwind CSS** (`@nuxtjs/tailwindcss`)
 - **Turso** (SQLite edge database) via `@libsql/client` — tanpa ORM berat, query SQL langsung agar tetap ringan
 - **GSAP** untuk animasi intro hero (berpusat ke tengah dari 4 arah)
-- Halaman **Admin** (`/admin`) untuk mengelola data Poster, Mahasiswa, dan Gallery — dengan upload gambar/GIF
+- Halaman **Admin** (`/admin`) untuk mengelola data Poster, Mahasiswa, Gallery, dan Info Kelas — dengan upload gambar/GIF
 
 Semua data (poster hero, mahasiswa, gallery) diambil langsung dari database Turso lewat API internal (`/api/*`), jadi begitu kamu ubah data lewat halaman admin, tampilan publik langsung ikut berubah.
 
@@ -53,13 +53,23 @@ SESSION_SECRET=ganti-dengan-string-rahasia-acak-yang-panjang
 > `ADMIN_PASSWORD` adalah password untuk masuk ke `/admin`.
 > `SESSION_SECRET` bebas, cukup string acak yang panjang (dipakai untuk menandatangani cookie sesi login).
 
-## 4. Buat tabel di database (sekali saja / setiap kali schema berubah)
+## 4. Buat tabel & isi data awal
 
 ```bash
-npm run db:push
+npm run db:reset
 ```
 
-Perintah ini akan membuat 3 tabel di Turso: `posters`, `mahasiswa`, `gallery` (lihat `server/db/schema.sql`).
+Perintah ini **menghapus** semua tabel lama, membuat ulang (`server/db/schema.sql`), lalu mengisi data awal (`server/db/seed.sql`): 5 role, **28 mahasiswa TI 25 C** (Miftah Pauzan Jamil = KM, M Danil Darmansyah = Wakil KM), dan masing-masing 1 data sementara untuk poster, gallery, dan info kelas.
+
+Perintah lain:
+
+| Perintah | Fungsi |
+|---|---|
+| `npm run db:push` | Buat tabel saja (jika belum ada), tanpa data |
+| `npm run db:seed` | Buat tabel + isi data awal. Aman diulang (tidak menggandakan data) |
+| `npm run db:reset` | Hapus semua tabel → buat ulang → isi data awal |
+
+Kamu juga bisa menjalankan isi `server/db/seed.sql` langsung di Turso Shell (`turso db shell ti25c`).
 
 ## 5. Jalankan development server
 
@@ -84,11 +94,20 @@ Buka:
 | `glow_color` | Warna efek glow kartu |
 | `sort_order` | Urutan tampil |
 
+### Role (tabel `roles`)
+| id | name |
+|---|---|
+| 1 | Ketua Kelas (KM) |
+| 2 | Wakil Ketua Kelas |
+| 3 | Sekretaris |
+| 4 | Bendahara |
+| 5 | Mahasiswa *(default)* |
+
 ### Mahasiswa
 | Field | Keterangan |
 |---|---|
 | `name` | Nama lengkap |
-| `role` | Role, default **"Mahasiswa"** (bisa diisi bebas: Ketua Kelas/KM, Sekretaris, dst) |
+| `role_id` | Mengacu ke tabel `roles`, default **5 (Mahasiswa)**. Di carousel, KM/Wakil KM/Sekretaris/Bendahara tampil paling depan |
 | `description` | Deskripsi singkat |
 | `hobi` | Hobi |
 | `skills` | Skill, dipisahkan koma (contoh: `JavaScript, Figma, Public Speaking`) |
@@ -102,6 +121,16 @@ Buka:
 | `cover_image` | 1 foto cover |
 | `photos` | Maksimal **7 foto**, bisa berupa gambar biasa atau **GIF** |
 
+### Info Kelas (tabel `info_kelas`, kartu coverflow "Info & Agenda Kelas")
+| Field | Keterangan |
+|---|---|
+| `tag` | Label kecil di atas judul (contoh: `RAPAT KELAS`) |
+| `title` | Judul (boleh 2 baris) |
+| `description` | Deskripsi singkat |
+| `link_url` | Link "Selengkapnya" (opsional) |
+| `image` | Gambar latar (opsional) |
+| `theme` | `sky`, `light`, `indigo`, `flame`, atau `emerald` |
+
 Upload gambar disimpan di folder `public/uploads/` dan diakses langsung sebagai file statis (`/uploads/nama-file.ext`). Format yang didukung: PNG, JPG, WEBP, GIF (maks 8MB per file).
 
 ---
@@ -110,7 +139,7 @@ Upload gambar disimpan di folder `public/uploads/` dan diakses langsung sebagai 
 
 - Login admin memakai 1 password (`ADMIN_PASSWORD`) — cocok untuk kebutuhan kelas/organisasi kecil.
 - Sesi login disimpan di cookie `httpOnly` yang ditandatangani (HMAC SHA-256), tanpa perlu tabel session tambahan di database → tetap ringan.
-- Semua endpoint yang mengubah data (`POST`/`PUT`/`DELETE` ke `/api/posters`, `/api/mahasiswa`, `/api/gallery`, `/api/upload`) diproteksi di sisi server (`server/middleware/admin-guard.ts`), bukan cuma disembunyikan di UI.
+- Semua endpoint yang mengubah data (`POST`/`PUT`/`DELETE` ke `/api/posters`, `/api/mahasiswa`, `/api/gallery`, `/api/info`, `/api/upload`) diproteksi di sisi server (`server/middleware/admin-guard.ts`), bukan cuma disembunyikan di UI.
 - Endpoint `GET` tetap publik supaya halaman utama bisa menampilkan data tanpa login.
 
 Untuk produksi, ganti `ADMIN_PASSWORD` dan `SESSION_SECRET` dengan nilai yang kuat & unik, dan jangan commit file `.env`.

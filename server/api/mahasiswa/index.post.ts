@@ -7,11 +7,11 @@ export default defineEventHandler(async (event) => {
 
   const db = useDb()
   const result = await db.execute({
-    sql: `INSERT INTO mahasiswa (name, role, description, hobi, skills, sertifikat, photo, sort_order)
+    sql: `INSERT INTO mahasiswa (name, role_id, description, hobi, skills, sertifikat, photo, sort_order)
           VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
     args: [
       body.name.trim(),
-      (body.role?.trim() || 'Mahasiswa'),
+      Number(body.role_id) || 5,
       body.description || '',
       body.hobi || '',
       body.skills || '',

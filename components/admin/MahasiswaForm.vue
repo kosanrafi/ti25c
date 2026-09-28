@@ -3,7 +3,7 @@ const props = defineProps<{
   modelValue: {
     id?: number
     name: string
-    role: string
+    role_id: number
     description: string
     hobi: string
     skills: string
@@ -18,7 +18,10 @@ const form = reactive({ ...props.modelValue })
 const saving = ref(false)
 const errorMsg = ref('')
 
-const roleOptions = ['Mahasiswa', 'Ketua Kelas (KM)', 'Wakil Ketua Kelas', 'Sekretaris', 'Bendahara']
+const roles = ref<{ id: number; name: string }[]>([])
+onMounted(async () => {
+  try { roles.value = await $fetch('/api/roles') } catch { roles.value = [] }
+})
 
 async function submit() {
   if (!form.name.trim()) {
@@ -55,10 +58,10 @@ async function submit() {
           </div>
           <div>
             <label class="field-label">Role</label>
-            <input v-model="form.role" list="role-options" class="field-input" placeholder="Mahasiswa" />
-            <datalist id="role-options">
-              <option v-for="r in roleOptions" :key="r" :value="r" />
-            </datalist>
+            <select v-model.number="form.role_id" class="field-input">
+              <option v-for="r in roles" :key="r.id" :value="r.id">{{ r.name }}</option>
+              <option v-if="!roles.length" :value="form.role_id">Mahasiswa</option>
+            </select>
           </div>
         </div>
 

@@ -8,11 +8,11 @@ export default defineEventHandler(async (event) => {
 
   const db = useDb()
   await db.execute({
-    sql: `UPDATE mahasiswa SET name=?, role=?, description=?, hobi=?, skills=?, sertifikat=?, photo=?, sort_order=?
+    sql: `UPDATE mahasiswa SET name=?, role_id=?, description=?, hobi=?, skills=?, sertifikat=?, photo=?, sort_order=?
           WHERE id=?`,
     args: [
       body.name.trim(),
-      (body.role?.trim() || 'Mahasiswa'),
+      Number(body.role_id) || 5,
       body.description || '',
       body.hobi || '',
       body.skills || '',

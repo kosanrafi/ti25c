@@ -19,6 +19,16 @@ function posOf(i: number) {
   return (i - active.value + n) % n
 }
 
+const HEX = /^#[0-9a-fA-F]{6}$/
+function glowOf(p: Poster) {
+  return HEX.test(p.glow_color) ? p.glow_color + '99' : 'rgba(239,75,54,.6)'
+}
+function bgOf(p: Poster) {
+  if (p.image) return `linear-gradient(to top, rgba(0,0,0,.55), transparent 60%), url('${p.image}')`
+  const c = HEX.test(p.glow_color) ? p.glow_color : '#EF4B36'
+  return `linear-gradient(160deg, ${c} 0%, ${c}88 45%, #120806 100%)`
+}
+
 function next() {
   if (!props.posters.length) return
   active.value = (active.value + 1) % props.posters.length
@@ -42,6 +52,9 @@ onBeforeUnmount(() => stop())
 <template>
   <section id="home" class="relative isolate z-10 overflow-x-clip">
     <div class="hero-glow pointer-events-none absolute inset-x-0 -top-28 -z-10 h-[700px]"></div>
+    <div class="pointer-events-none absolute bottom-4 right-[20%] -z-10 hidden h-[360px] w-[540px] opacity-40 lg:block" aria-hidden="true">
+      <div class="seats"></div>
+    </div>
 
     <div class="mx-auto max-w-7xl px-4 pb-14 pt-12 sm:px-6 sm:pb-16 lg:pb-24 lg:pt-20">
       <div class="grid items-end gap-10 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)]">
@@ -91,16 +104,13 @@ onBeforeUnmount(() => stop())
               :key="p.id"
               class="stack-card"
               :data-pos="posOf(i)"
-              :style="{
-                '--glow': p.glow_color || 'rgba(239,75,54,.55)',
-                backgroundImage: p.image ? `url('${p.image}')` : `linear-gradient(160deg,#EF4B36 0%,#8A2418 52%,#160908 100%)`
-              }"
+              :style="{ '--glow': glowOf(p), backgroundImage: bgOf(p) }"
               @click="active = i"
             >
               <div class="flex h-full flex-col justify-between bg-gradient-to-t from-black/70 via-black/10 to-transparent p-5">
                 <span class="text-[10px] font-semibold tracking-[0.2em] text-white/70">ANGKATAN 2025</span>
                 <div>
-                  <p class="text-lg font-extrabold leading-tight text-white line-clamp-2">{{ p.title }}</p>
+                  <p class="text-[2rem] font-extrabold leading-[1.05] tracking-tight text-white line-clamp-3">{{ p.title }}</p>
                   <p v-if="p.description" class="mt-2 text-xs font-medium text-white/80 line-clamp-2">{{ p.description }}</p>
                 </div>
               </div>

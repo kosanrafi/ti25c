@@ -5,6 +5,7 @@ interface Mhs {
   id: number
   name: string
   role: string
+  role_id: number
   description: string
   hobi: string
   skills: string
@@ -27,7 +28,7 @@ const filtered = computed(() => {
 })
 
 const emptyForm = (): Omit<Mhs, 'id'> & { id?: number } => ({
-  name: '', role: 'Mahasiswa', description: '', hobi: '', skills: '', sertifikat: '', photo: '',
+  name: '', role: 'Mahasiswa', role_id: 5, description: '', hobi: '', skills: '', sertifikat: '', photo: '',
   sort_order: (list.value?.length || 0)
 })
 

@@ -2,6 +2,7 @@
 const { data: posters } = await useFetch('/api/posters', { default: () => [] })
 const { data: mahasiswa } = await useFetch('/api/mahasiswa', { default: () => [] })
 const { data: gallery } = await useFetch('/api/gallery', { default: () => [] })
+const { data: info } = await useFetch('/api/info', { default: () => [] })
 
 onMounted(async () => {
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
@@ -30,5 +31,8 @@ onMounted(async () => {
     <HeroSection :posters="posters as any" />
     <MahasiswaSection :mahasiswa="mahasiswa as any" />
     <GallerySection :gallery="gallery as any" />
+    <InfoSection :items="info as any" />
+    <AboutSection />
+    <ContactSection />
   </div>
 </template>

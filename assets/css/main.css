@@ -130,3 +130,62 @@ section[id] { scroll-margin-top:7rem; }
   .admin-btn-outline { @apply inline-flex items-center justify-center gap-2 rounded-xl border border-white/15 px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-white/10; }
   .admin-btn-danger  { @apply inline-flex items-center justify-center gap-2 rounded-xl border border-red-500/40 px-3 py-2 text-xs font-semibold text-red-300 transition-colors hover:bg-red-500/10; }
 }
+
+/* ---------- Dekorasi kursi di Hero ---------- */
+.seats {
+  width:100%; height:100%;
+  background-image:radial-gradient(ellipse 20px 26px at 50% 48%, #a51e15 0 58%, transparent 66%);
+  background-size:54px 62px;
+  transform:perspective(520px) rotateX(58deg);
+  transform-origin:50% 100%;
+  filter:blur(4px);
+  -webkit-mask-image:linear-gradient(to top, #000 8%, transparent 88%);
+  mask-image:linear-gradient(to top, #000 8%, transparent 88%);
+}
+
+/* ---------- Coverflow "Info & Agenda Kelas" ---------- */
+.flow { display:grid; justify-items:center; overflow-x:clip; touch-action:pan-y; padding-block:.5rem; }
+.deal {
+  --o:0; --a:0;
+  grid-area:1/1; width:min(80vw,560px); cursor:pointer;
+  transform:translateX(calc(var(--o) * (96% + 18px))) scale(calc(1 - var(--a) * .12));
+  opacity:calc(1 - var(--a) * .38);
+  filter:brightness(calc(1 - var(--a) * .28));
+  transition:transform .7s cubic-bezier(.22,1,.36,1), opacity .7s ease, filter .7s ease;
+}
+.deal.is-active { cursor:default; }
+.deal-card { border-radius:20px; background:#131313; border:1px solid rgba(255,255,255,.08); padding:10px 10px 20px; }
+.deal-media {
+  border-radius:14px; aspect-ratio:16/9; display:flex; flex-direction:column; justify-content:center;
+  gap:.4rem; padding:1.25rem 1.75rem; background-size:cover; background-position:center;
+}
+@media (prefers-reduced-motion:reduce) { .deal { transition:none; } }
+
+/* ---------- Tentang Kami ---------- */
+.about-card {
+  position:relative; border-radius:28px;
+  background:
+    radial-gradient(60% 90% at 0% 0%, rgba(255,255,255,.10), transparent 60%),
+    linear-gradient(100deg, #9E2B19 0%, #C4311B 52%, #E4411F 100%);
+  box-shadow:0 30px 70px -30px rgba(228,65,31,.55);
+}
+.about-chip {
+  display:flex; align-items:center; gap:.75rem; border-radius:14px; padding:.9rem 1.1rem;
+  background:rgba(92,14,6,.34); border:1px solid rgba(255,140,110,.32);
+  box-shadow:inset 0 0 18px rgba(255,120,90,.10);
+  font-size:.8125rem; font-weight:600; color:#fff;
+}
+.about-line { height:3px; border-radius:3px; background:linear-gradient(90deg, rgba(255,255,255,.95), #fff 60%, rgba(255,255,255,.6)); box-shadow:0 0 14px rgba(255,255,255,.35); }
+
+/* ---------- Kontak ---------- */
+.news-card {
+  background:radial-gradient(120% 110% at 85% 22%, rgba(196,196,196,.58) 0%, rgba(112,112,112,.58) 36%, rgba(38,38,38,.96) 76%), #1a1a1a;
+  border:1px solid rgba(255,255,255,.14);
+}
+.loc-row { border-radius:9999px; background:#1a1a1a; border:1px solid rgba(255,255,255,.08); }
+
+@layer components {
+  .btn-black     { @apply flex flex-1 items-center justify-center gap-2 rounded-full bg-black py-2 text-xs font-semibold text-white transition-colors hover:bg-neutral-900; }
+  .dots-btn      { @apply grid h-7 w-7 shrink-0 place-items-center rounded-full bg-white/15 text-white/75 transition-colors hover:bg-white/25; }
+  .contact-pill  { @apply inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.07] px-4 py-2 text-xs font-medium text-white underline underline-offset-2 transition-colors hover:bg-white/10; }
+}

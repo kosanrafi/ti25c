@@ -2,6 +2,7 @@
 const route = useRoute()
 const router = useRouter()
 const loggingOut = ref(false)
+const links = useAdminLinks()
 
 async function logout() {
   loggingOut.value = true
@@ -32,6 +33,20 @@ async function logout() {
           Keluar
         </button>
       </header>
+
+      <nav
+        v-if="route.path !== '/admin/login'"
+        class="no-scrollbar flex gap-2 overflow-x-auto border-b border-white/10 px-4 py-2 sm:hidden"
+        aria-label="Menu admin"
+      >
+        <NuxtLink
+          v-for="l in links"
+          :key="l.to"
+          :to="l.to"
+          class="shrink-0 rounded-full px-3.5 py-1.5 text-xs font-semibold transition-colors"
+          :class="route.path === l.to ? 'bg-flame-500 text-white' : 'bg-white/5 text-white/75'"
+        >{{ l.label }}</NuxtLink>
+      </nav>
 
       <div class="flex-1 px-4 py-6 sm:px-6 lg:px-10 lg:py-10">
         <slot />
