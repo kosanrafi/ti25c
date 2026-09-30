@@ -35,7 +35,7 @@ function clear() {
         </label>
         <button v-if="modelValue" type="button" class="text-left text-[11px] text-white/50 hover:text-red-300" @click="clear">Hapus gambar</button>
         <p v-if="error" class="text-[11px] text-red-300">{{ error }}</p>
-        <p class="text-[10px] text-white/40">PNG, JPG, WEBP, atau GIF · maks 8MB</p>
+        <p class="text-[10px] text-white/40">PNG, JPG, WEBP, atau GIF · maks 4MB</p>
       </div>
     </div>
   </div>

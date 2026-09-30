@@ -131,7 +131,7 @@ Buka:
 | `image` | Gambar latar (opsional) |
 | `theme` | `sky`, `light`, `indigo`, `flame`, atau `emerald` |
 
-Upload gambar disimpan di folder `public/uploads/` dan diakses langsung sebagai file statis (`/uploads/nama-file.ext`). Format yang didukung: PNG, JPG, WEBP, GIF (maks 8MB per file).
+Upload gambar disimpan di folder `public/uploads/` dan diakses langsung sebagai file statis (`/uploads/nama-file.ext`). Format yang didukung: PNG, JPG, WEBP, GIF (maks 4MB per file).
 
 ---
 
@@ -217,3 +217,12 @@ npm run preview   # opsional, untuk cek hasil build secara lokal
 ```
 
 Deploy folder hasil build (`.output/`) ke platform Node.js seperti Vercel, Netlify, Railway, atau VPS biasa. Pastikan environment variables (`TURSO_DATABASE_URL`, `TURSO_AUTH_TOKEN`, `ADMIN_PASSWORD`, `SESSION_SECRET`) sudah diatur di platform tersebut, dan folder `public/uploads/` bisa ditulis (writable) di server produksi — atau alihkan upload ke layanan penyimpanan objek (S3, Cloudflare R2, dll) bila deploy ke platform serverless yang read-only filesystem-nya.
+
+---
+
+## Upload gambar di Vercel (Vercel Blob)
+
+Filesystem Vercel read-only, jadi upload disimpan di **Vercel Blob**:
+1. Vercel → project → **Storage** → **Create** → **Blob** → connect ke project (env `BLOB_READ_WRITE_TOKEN` terisi otomatis).
+2. Untuk dev lokal, salin token itu ke `.env` sebagai `BLOB_READ_WRITE_TOKEN=...`.
+3. Redeploy. Batas ukuran file 4MB (limit body request Vercel).
