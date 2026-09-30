@@ -189,3 +189,65 @@ section[id] { scroll-margin-top:7rem; }
   .dots-btn      { @apply grid h-7 w-7 shrink-0 place-items-center rounded-full bg-white/15 text-white/75 transition-colors hover:bg-white/25; }
   .contact-pill  { @apply inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.07] px-4 py-2 text-xs font-medium text-white underline underline-offset-2 transition-colors hover:bg-white/10; }
 }
+
+/* ================= Peningkatan futuristik ================= */
+
+/* ---------- Latar ambient (grid bergerak + glow melayang) ---------- */
+.bg-ambient { position:fixed; inset:0; z-index:-10; overflow:hidden; pointer-events:none; }
+.bg-ambient::before {
+  content:""; position:absolute; inset:-20%;
+  background-image:
+    linear-gradient(rgba(255,255,255,.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,.035) 1px, transparent 1px);
+  background-size:56px 56px;
+  animation:gridDrift 46s linear infinite;
+  -webkit-mask-image:radial-gradient(58% 55% at 50% 22%, #000 40%, transparent 78%);
+  mask-image:radial-gradient(58% 55% at 50% 22%, #000 40%, transparent 78%);
+}
+.bg-ambient::after {
+  content:""; position:absolute; inset:0;
+  background:
+    radial-gradient(36% 28% at 14% 10%, rgba(239,75,54,.16), transparent 70%),
+    radial-gradient(30% 24% at 88% 64%, rgba(239,75,54,.11), transparent 70%);
+  animation:glowFloat 20s ease-in-out infinite alternate;
+}
+@keyframes gridDrift { from { transform:translate(0,0); } to { transform:translate(56px,56px); } }
+@keyframes glowFloat { from { transform:translate(0,0) scale(1); } to { transform:translate(-2.5%,2%) scale(1.07); } }
+
+/* ---------- Progress bar scroll ---------- */
+.scroll-progress-track { position:fixed; inset-inline:0; top:0; z-index:60; height:2px; background:rgba(255,255,255,.06); }
+.scroll-progress-bar { height:100%; background:linear-gradient(90deg,#AD2C20,#FF6E4C,#AD2C20); box-shadow:0 0 10px rgba(255,110,76,.6); transition:width .12s linear; }
+
+/* ---------- Ticker / marquee ---------- */
+.ticker-mask { -webkit-mask-image:linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent); mask-image:linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent); }
+.ticker { animation:tickerScroll 24s linear infinite; }
+@keyframes tickerScroll { from { transform:translateX(0); } to { transform:translateX(-50%); } }
+
+/* ---------- Judul berpendar (pulse) ---------- */
+.glow-title { animation:titlePulse 4.5s ease-in-out infinite; }
+@keyframes titlePulse {
+  0%, 100% { text-shadow:0 0 18px rgba(255,255,255,.28); }
+  50%      { text-shadow:0 0 30px rgba(255,255,255,.5), 0 0 58px rgba(239,75,54,.28); }
+}
+
+/* ---------- Tilt 3D pada stack poster hero ---------- */
+.stack { transition:transform .35s cubic-bezier(.22,1,.36,1); will-change:transform; }
+
+/* ---------- Sapuan cahaya (sheen) di tombol ---------- */
+.btn-solid, .btn-outline, .btn-black, .store-badge { position:relative; overflow:hidden; isolation:isolate; }
+.btn-solid::after, .btn-outline::after, .btn-black::after, .store-badge::after {
+  content:""; position:absolute; inset:0; z-index:1; pointer-events:none;
+  background:linear-gradient(115deg, transparent 30%, rgba(255,255,255,.30) 50%, transparent 70%);
+  transform:translateX(-130%);
+  transition:transform .65s ease;
+}
+.btn-solid:hover::after, .btn-outline:hover::after, .btn-black:hover::after, .store-badge:hover::after { transform:translateX(130%); }
+
+/* ---------- Transisi antar halaman (mahasiswa/gallery detail) ---------- */
+.page-enter-active, .page-leave-active { transition:opacity .32s ease, transform .32s ease; }
+.page-enter-from, .page-leave-to { opacity:0; transform:translateY(14px); }
+
+@media (prefers-reduced-motion:reduce) {
+  .bg-ambient::before, .bg-ambient::after, .ticker, .glow-title, .stack { animation:none !important; transition:none !important; }
+  .page-enter-active, .page-leave-active { transition:none; }
+}

@@ -12,6 +12,8 @@ interface Mahasiswa {
 
 const props = defineProps<{ mahasiswa: Mahasiswa[] }>()
 
+useScrollReveal('#mahasiswa .screen-panel')
+
 const trackEl = ref<HTMLElement | null>(null)
 
 // render dua kali supaya carousel bisa loop mulus tanpa lompatan

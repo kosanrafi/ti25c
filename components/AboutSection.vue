@@ -1,3 +1,7 @@
+<script setup lang="ts">
+useScrollReveal('#tentang .about-card')
+</script>
+
 <template>
   <section id="tentang" class="px-4 pt-32 sm:px-6">
     <div class="mx-auto max-w-7xl">

@@ -146,6 +146,22 @@ Untuk produksi, ganti `ADMIN_PASSWORD` dan `SESSION_SECRET` dengan nilai yang ku
 
 ---
 
+## Animasi & nuansa futuristik
+
+Beranda sekarang punya beberapa lapis animasi, semuanya dibuat ringan (CSS + GSAP yang sudah ada di `package.json`, tidak ada dependency baru):
+
+- **Reveal saat scroll** — tiap section (Mahasiswa, Gallery, Info & Agenda, Tentang Kami, Kontak) muncul fade + geser naik begitu masuk layar (GSAP ScrollTrigger, diimpor dinamis di client saja).
+- **Progress bar** — garis tipis di paling atas menunjukkan seberapa jauh halaman sudah discroll.
+- **Latar ambient** — grid garis halus & glow oranye yang bergerak sangat lambat di belakang seluruh halaman, memberi kedalaman tanpa mengganggu keterbacaan.
+- **Statistik count-up** — jumlah Mahasiswa, Album Gallery, dan Info & Agenda dihitung naik dari 0 saat pertama terlihat, diambil langsung dari data asli di database.
+- **Ticker berjalan** — teks berjalan "TEKNIK INFORMATIKA 25 C • SOLID & KOMPAK • ANGKATAN 2025" di sebelah statistik.
+- **Tilt 3D pada poster Hero** — kartu poster miring mengikuti posisi kursor (desktop saja).
+- **Judul berpendar** — efek glow pada judul section berdenyut halus.
+- **Sapuan cahaya di tombol** — highlight tipis melintas saat tombol di-hover.
+- **Transisi antar halaman** — pindah ke halaman detail Mahasiswa/Gallery terasa mulus (fade + geser), bukan lompat instan.
+
+Semua animasi otomatis dimatikan kalau pengguna mengaktifkan preferensi **"reduce motion"** di sistem operasinya, dan tidak ada animasi tambahan di halaman `/admin` (biar tetap gesit untuk kerja input data).
+
 ## Performa & responsivitas
 
 - Halaman publik dirender SSR (cepat & ringan saat pertama dibuka), halaman `/admin` dirender client-only (tidak perlu SSR untuk panel admin).

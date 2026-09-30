@@ -8,6 +8,7 @@ export default defineNuxtConfig({
   css: ['~/assets/css/main.css'],
 
   app: {
+    pageTransition: { name: 'page', mode: 'out-in' },
     head: {
       title: 'TI 25 C — Universitas Perjuangan Tasikmalaya',
       htmlAttrs: { lang: 'id' },

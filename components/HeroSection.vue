@@ -11,6 +11,24 @@ const props = defineProps<{ posters: Poster[] }>()
 
 const stackEl = ref<HTMLElement | null>(null)
 const active = ref(0)
+
+/* tilt 3D mengikuti kursor (desktop saja, hormati reduce-motion) */
+const tiltX = ref(0)
+const tiltY = ref(0)
+let tiltEnabled = false
+
+function onTilt(e: MouseEvent) {
+  if (!tiltEnabled || !stackEl.value) return
+  const r = stackEl.value.getBoundingClientRect()
+  const px = (e.clientX - r.left) / r.width - 0.5
+  const py = (e.clientY - r.top) / r.height - 0.5
+  tiltY.value = px * 14
+  tiltX.value = py * -14
+}
+function resetTilt() {
+  tiltX.value = 0
+  tiltY.value = 0
+}
 let timer: ReturnType<typeof setInterval> | null = null
 
 function posOf(i: number) {
@@ -45,7 +63,12 @@ function stop() {
   timer = null
 }
 
-onMounted(() => start())
+onMounted(() => {
+  start()
+  tiltEnabled =
+    window.matchMedia('(hover: hover) and (pointer: fine)').matches &&
+    !window.matchMedia('(prefers-reduced-motion: reduce)').matches
+})
 onBeforeUnmount(() => stop())
 </script>
 
@@ -96,9 +119,15 @@ onBeforeUnmount(() => stop())
           class="anim-right relative z-20 mb-4 flex justify-center lg:justify-end lg:pr-24"
           aria-hidden="true"
           @mouseenter="stop"
-          @mouseleave="start"
+          @mouseleave="start(); resetTilt()"
+          @mousemove="onTilt"
         >
-          <div v-if="posters.length" ref="stackEl" class="stack">
+          <div
+            v-if="posters.length"
+            ref="stackEl"
+            class="stack"
+            :style="{ transform: `perspective(900px) rotateX(${tiltX}deg) rotateY(${tiltY}deg)` }"
+          >
             <div
               v-for="(p, i) in posters"
               :key="p.id"
@@ -118,7 +147,7 @@ onBeforeUnmount(() => stop())
           </div>
 
           <!-- placeholder saat belum ada data poster -->
-          <div v-else class="stack">
+          <div v-else class="stack" :style="{ transform: 'perspective(900px)' }">
             <div class="stack-card grid place-items-center" style="--glow:rgba(239,75,54,.5); background:linear-gradient(160deg,#EF4B36 0%,#8A2418 52%,#160908 100%)">
               <p class="px-5 text-center text-sm text-white/80">Belum ada poster.<br />Tambahkan lewat halaman Admin.</p>
             </div>

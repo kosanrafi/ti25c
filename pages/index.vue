@@ -29,6 +29,11 @@ onMounted(async () => {
 <template>
   <div>
     <HeroSection :posters="posters as any" />
+    <StatsTicker
+      :mahasiswa="mahasiswa?.length || 0"
+      :gallery="gallery?.length || 0"
+      :agenda="info?.length || 0"
+    />
     <MahasiswaSection :mahasiswa="mahasiswa as any" />
     <GallerySection :gallery="gallery as any" />
     <InfoSection :items="info as any" />

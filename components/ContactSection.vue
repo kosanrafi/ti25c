@@ -1,3 +1,7 @@
+<script setup lang="ts">
+useScrollReveal('#kontak > div')
+</script>
+
 <template>
   <section id="kontak" class="px-4 pt-24 sm:px-6">
     <div class="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[1.05fr_1fr] lg:gap-14">

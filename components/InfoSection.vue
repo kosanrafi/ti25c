@@ -11,6 +11,8 @@ interface Info {
 
 const props = defineProps<{ items: Info[] }>()
 
+useScrollReveal('#info .flow, #info > div > .flex')
+
 const n = computed(() => props.items.length)
 const active = ref(Math.floor(props.items.length / 2))
 
