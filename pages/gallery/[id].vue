@@ -40,8 +40,27 @@ function onKeydown(e: KeyboardEvent) {
 onMounted(() => window.addEventListener('keydown', onKeydown))
 onBeforeUnmount(() => window.removeEventListener('keydown', onKeydown))
 
+const config = useRuntimeConfig()
+const siteUrl = config.public.siteUrl
+const pageUrl = computed(() => `${siteUrl}/gallery/${route.params.id}`)
+const seoDescription = computed(() =>
+  data.value
+    ? `Album "${data.value.title}" — dokumentasi kegiatan Teknik Informatika 25 C (TI25C), Universitas Perjuangan Tasikmalaya.`
+    : 'Galeri momen dan kegiatan Teknik Informatika 25 C (TI25C), Universitas Perjuangan Tasikmalaya.'
+)
+
+useSeoMeta({
+  title: () => (data.value ? `${data.value.title} — Gallery TI 25 C` : 'Gallery — TI 25 C'),
+  description: () => seoDescription.value,
+  ogTitle: () => (data.value ? `${data.value.title} — Gallery TI 25 C` : 'Gallery — TI 25 C'),
+  ogDescription: () => seoDescription.value,
+  ogImage: () => (data.value?.cover_image ? `${siteUrl}${data.value.cover_image}` : `${siteUrl}/og-image.jpg`),
+  ogUrl: () => pageUrl.value,
+  ogType: 'website',
+  twitterCard: 'summary_large_image'
+})
 useHead(() => ({
-  title: data.value ? `${data.value.title} — Gallery TI 25 C` : 'Gallery — TI 25 C'
+  link: [{ rel: 'canonical', href: pageUrl.value }]
 }))
 </script>
 

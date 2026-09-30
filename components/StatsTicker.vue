@@ -9,28 +9,43 @@ const stats = computed(() => [
 
 const numRefs = ref<HTMLElement[]>([])
 
-onMounted(async () => {
-  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+// count-up ringan pakai requestAnimationFrame biasa (tanpa library),
+// hanya berjalan singkat (~1.2 detik) sekali saat elemen pertama terlihat.
+function animateCount(el: HTMLElement, target: number, duration = 1200) {
+  if (target <= 0) { el.textContent = '0'; return }
+  const start = performance.now()
+  function tick(now: number) {
+    const p = Math.min(1, (now - start) / duration)
+    const eased = 1 - Math.pow(1 - p, 3)
+    el.textContent = String(Math.round(eased * target))
+    if (p < 1) requestAnimationFrame(tick)
+  }
+  requestAnimationFrame(tick)
+}
+
+onMounted(() => {
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  if (reduce) {
     numRefs.value.forEach((el, i) => { if (el) el.textContent = String(stats.value[i]?.value ?? 0) })
     return
   }
 
-  const { default: gsap } = await import('gsap')
-  const { ScrollTrigger } = await import('gsap/ScrollTrigger')
-  gsap.registerPlugin(ScrollTrigger)
+  if (!('IntersectionObserver' in window)) {
+    numRefs.value.forEach((el, i) => { if (el) animateCount(el, stats.value[i]?.value ?? 0) })
+    return
+  }
 
-  numRefs.value.forEach((el, i) => {
-    if (!el) return
-    const target = stats.value[i]?.value ?? 0
-    const counter = { val: 0 }
-    gsap.to(counter, {
-      val: target,
-      duration: 1.3,
-      ease: 'power2.out',
-      scrollTrigger: { trigger: el, start: 'top 92%' },
-      onUpdate: () => { el.textContent = String(Math.round(counter.val)) }
+  const io = new IntersectionObserver((entries, obs) => {
+    entries.forEach(entry => {
+      if (!entry.isIntersecting) return
+      const el = entry.target as HTMLElement
+      const idx = numRefs.value.indexOf(el)
+      animateCount(el, stats.value[idx]?.value ?? 0)
+      obs.unobserve(el)
     })
-  })
+  }, { threshold: 0.4 })
+
+  numRefs.value.forEach(el => el && io.observe(el))
 })
 </script>
 

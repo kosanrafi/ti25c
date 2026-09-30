@@ -14,6 +14,7 @@ const props = defineProps<{ mahasiswa: Mahasiswa[] }>()
 
 useScrollReveal('#mahasiswa .screen-panel')
 
+const sectionEl = ref<HTMLElement | null>(null)
 const trackEl = ref<HTMLElement | null>(null)
 
 // render dua kali supaya carousel bisa loop mulus tanpa lompatan
@@ -25,29 +26,57 @@ const loopedList = computed(() => {
   ]
 })
 
-let running = true
-let rafId: number | null = null
+/**
+ * Auto-geser RINGAN: sekali lompat tiap beberapa detik (native smooth-scroll,
+ * digerakkan compositor browser), BUKAN scrollLeft yang ditulis tiap frame.
+ * Ditambah: hanya aktif kalau section ini benar-benar terlihat di layar
+ * (IntersectionObserver) dan berhenti saat disentuh/hover/tab tidak aktif.
+ */
+const AUTO_INTERVAL = 3000
+let autoTimer: ReturnType<typeof setInterval> | null = null
 let resumeTimer: ReturnType<typeof setTimeout> | null = null
-const reduceMotion = ref(false)
-const SPEED = 0.55 // px per frame
+let io: IntersectionObserver | null = null
+let paused = false
+let isVisible = false
+let reduceMotion = false
 
-function frame() {
+function stepWidth() {
   const track = trackEl.value
-  if (track && running && props.mahasiswa.length > 1) {
-    const half = track.scrollWidth / 2
-    track.scrollLeft += SPEED
-    if (track.scrollLeft >= half) track.scrollLeft -= half
+  if (!track) return 0
+  const cards = track.querySelectorAll<HTMLElement>(':scope > .student-w')
+  if (cards.length >= 2) return cards[1].offsetLeft - cards[0].offsetLeft
+  return track.clientWidth * 0.85
+}
+
+function advance() {
+  const track = trackEl.value
+  if (!track || paused || !isVisible || reduceMotion || props.mahasiswa.length <= 1) return
+  const half = track.scrollWidth / 2
+  const step = stepWidth()
+  if (step <= 0) return
+  if (track.scrollLeft + step >= half - 4) {
+    track.scrollLeft = track.scrollLeft - half // lompat instan ke posisi identik di set pertama (tak terlihat)
   }
-  rafId = requestAnimationFrame(frame)
+  track.scrollBy({ left: step, behavior: 'smooth' })
+}
+
+function startAuto() {
+  stopAuto()
+  if (reduceMotion || props.mahasiswa.length <= 1) return
+  autoTimer = setInterval(advance, AUTO_INTERVAL)
+}
+function stopAuto() {
+  if (autoTimer) clearInterval(autoTimer)
+  autoTimer = null
 }
 
 function pause() {
-  running = false
+  paused = true
   if (resumeTimer) clearTimeout(resumeTimer)
 }
 function resumeSoon() {
   if (resumeTimer) clearTimeout(resumeTimer)
-  resumeTimer = setTimeout(() => { running = !reduceMotion.value }, 1200)
+  resumeTimer = setTimeout(() => { paused = false }, 1500)
 }
 
 function scroll(dir: number) {
@@ -56,25 +85,42 @@ function scroll(dir: number) {
   resumeSoon()
 }
 
+function onVisibility() {
+  if (document.hidden) stopAuto()
+  else startAuto()
+}
+
 onMounted(() => {
-  reduceMotion.value = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-  running = !reduceMotion.value
-  rafId = requestAnimationFrame(frame)
+  reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+
+  if ('IntersectionObserver' in window && sectionEl.value) {
+    io = new IntersectionObserver(
+      entries => {
+        isVisible = entries[0]?.isIntersecting ?? false
+        if (isVisible) startAuto()
+        else stopAuto()
+      },
+      { threshold: 0.15 }
+    )
+    io.observe(sectionEl.value)
+  } else {
+    // fallback: browser lama tanpa IntersectionObserver, tetap jalan tanpa cek visibilitas
+    isVisible = true
+    startAuto()
+  }
 
   document.addEventListener('visibilitychange', onVisibility)
 })
 onBeforeUnmount(() => {
-  if (rafId) cancelAnimationFrame(rafId)
+  stopAuto()
   if (resumeTimer) clearTimeout(resumeTimer)
+  if (io) io.disconnect()
   document.removeEventListener('visibilitychange', onVisibility)
 })
-function onVisibility() {
-  running = document.hidden ? false : !reduceMotion.value
-}
 </script>
 
 <template>
-  <section id="mahasiswa" class="relative px-4 pt-20 sm:px-6">
+  <section id="mahasiswa" ref="sectionEl" class="relative px-4 pt-20 sm:px-6">
     <div class="mx-auto max-w-7xl">
       <div class="screen-panel">
 

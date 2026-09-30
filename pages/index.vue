@@ -4,25 +4,41 @@ const { data: mahasiswa } = await useFetch('/api/mahasiswa', { default: () => []
 const { data: gallery } = await useFetch('/api/gallery', { default: () => [] })
 const { data: info } = await useFetch('/api/info', { default: () => [] })
 
-onMounted(async () => {
-  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-    document.querySelectorAll('.anim-top, .anim-left, .anim-right, .anim-bottom')
-      .forEach(el => ((el as HTMLElement).style.opacity = '1'))
-    return
-  }
+const config = useRuntimeConfig()
+const siteUrl = config.public.siteUrl
 
-  const { default: gsap } = await import('gsap')
-
-  gsap.set('.anim-top', { y: -46, opacity: 0 })
-  gsap.set('.anim-left', { x: -64, opacity: 0 })
-  gsap.set('.anim-right', { x: 64, opacity: 0 })
-  gsap.set('.anim-bottom', { y: 46, opacity: 0 })
-
-  gsap.timeline({ defaults: { duration: 0.9, ease: 'power3.out' } })
-    .to('.anim-top',    { y: 0, opacity: 1 })
-    .to('.anim-left',   { x: 0, opacity: 1, stagger: 0.12 }, '-=0.45')
-    .to('.anim-right',  { x: 0, opacity: 1 }, '<')
-    .to('.anim-bottom', { y: 0, opacity: 1, stagger: 0.12 }, '-=0.35')
+useSeoMeta({
+  title: 'TI 25 C — Teknik Informatika Universitas Perjuangan Tasikmalaya',
+  description:
+    'Website resmi TI25C, kelas Teknik Informatika 25 C Universitas Perjuangan Tasikmalaya (UNPER). Profil mahasiswa, galeri kegiatan, dan info agenda kelas.',
+  ogTitle: 'TI 25 C — Teknik Informatika UNPER',
+  ogDescription: 'Profil mahasiswa, galeri momen, dan info agenda Teknik Informatika 25 C — Universitas Perjuangan Tasikmalaya.',
+  ogImage: `${siteUrl}/og-image.jpg`,
+  ogUrl: siteUrl,
+  ogType: 'website',
+  twitterCard: 'summary_large_image'
+})
+useHead({
+  link: [{ rel: 'canonical', href: siteUrl }],
+  script: [
+    {
+      type: 'application/ld+json',
+      innerHTML: JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'EducationalOrganization',
+        name: 'TI 25 C — Teknik Informatika Universitas Perjuangan Tasikmalaya',
+        alternateName: ['TI25C', 'TI 25 C', 'Teknik Informatika 25 C UNPER'],
+        url: siteUrl,
+        description:
+          'Kelas Teknik Informatika 25 C, Universitas Perjuangan Tasikmalaya (UNPER). Angkatan 2025.',
+        parentOrganization: {
+          '@type': 'CollegeOrUniversity',
+          name: 'Universitas Perjuangan Tasikmalaya',
+          alternateName: 'UNPER'
+        }
+      })
+    }
+  ]
 })
 </script>
 

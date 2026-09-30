@@ -9,15 +9,21 @@ body { overflow-x:hidden; }
 section[id] { scroll-margin-top:7rem; }
 :focus-visible { outline:2px solid #FF9B7E; outline-offset:3px; }
 
-.glow-title { text-shadow:0 0 22px rgba(255,255,255,.32); }
+.glow-title { text-shadow:0 0 20px rgba(255,255,255,.3); }
 
-/* ---------- Navbar pill kaca ---------- */
+/* ---------- Navbar pill kaca ----------
+   blur dikecilkan & saturate dihapus (backdrop-filter berat di GPU HP,
+   apalagi pada elemen sticky yang repaint tiap scroll). Di layar kecil,
+   blur dimatikan total dan diganti warna solid semi-transparan. */
 .nav-pill {
   background:linear-gradient(90deg, rgba(255,255,255,.11) 0%, rgba(255,255,255,.04) 38%, rgba(8,8,8,.62) 100%);
-  -webkit-backdrop-filter:blur(18px) saturate(140%);
-  backdrop-filter:blur(18px) saturate(140%);
+  -webkit-backdrop-filter:blur(10px);
+  backdrop-filter:blur(10px);
   border:1px solid rgba(255,255,255,.20);
   box-shadow:inset 3px 0 2px -2px rgba(255,255,255,.65), 0 14px 34px rgba(0,0,0,.55);
+}
+@media (max-width:640px) {
+  .nav-pill { background:rgba(10,10,10,.88); -webkit-backdrop-filter:none; backdrop-filter:none; }
 }
 .nav-active { position:relative; }
 .nav-active::after {
@@ -107,10 +113,19 @@ section[id] { scroll-margin-top:7rem; }
   html { scroll-behavior:auto !important; }
 }
 
-/* ---------- Animasi intro (berpusat ke tengah) ---------- */
-.anim-top, .anim-left, .anim-right, .anim-bottom { opacity:0; }
+/* ---------- Animasi intro (berpusat ke tengah), murni CSS — tanpa JS ---------- */
+@keyframes revealTop    { from { opacity:0; transform:translateY(-46px); } to { opacity:1; transform:translateY(0); } }
+@keyframes revealLeft   { from { opacity:0; transform:translateX(-56px); } to { opacity:1; transform:translateX(0); } }
+@keyframes revealRight  { from { opacity:0; transform:translateX(56px); } to { opacity:1; transform:translateX(0); } }
+@keyframes revealBottom { from { opacity:0; transform:translateY(40px); } to { opacity:1; transform:translateY(0); } }
+
+.anim-top    { opacity:0; animation:revealTop .8s cubic-bezier(.22,1,.36,1) .05s forwards; }
+.anim-left   { opacity:0; animation:revealLeft .8s cubic-bezier(.22,1,.36,1) .2s forwards; }
+.anim-right  { opacity:0; animation:revealRight .8s cubic-bezier(.22,1,.36,1) .2s forwards; }
+.anim-bottom { opacity:0; animation:revealBottom .8s cubic-bezier(.22,1,.36,1) .45s forwards; }
+
 @media (prefers-reduced-motion:reduce) {
-  .anim-top, .anim-left, .anim-right, .anim-bottom { opacity:1 !important; transform:none !important; }
+  .anim-top, .anim-left, .anim-right, .anim-bottom { animation:none; opacity:1 !important; transform:none !important; }
 }
 
 /* ---------- Komponen (Tailwind @apply) ---------- */
@@ -214,6 +229,14 @@ section[id] { scroll-margin-top:7rem; }
 @keyframes gridDrift { from { transform:translate(0,0); } to { transform:translate(56px,56px); } }
 @keyframes glowFloat { from { transform:translate(0,0) scale(1); } to { transform:translate(-2.5%,2%) scale(1.07); } }
 
+/* Di HP: matikan grid + animasinya sepenuhnya, sisakan glow statis (tanpa animasi).
+   Ini pemotong beban terbesar — dua layer full-viewport yang animasi terus-menerus
+   sangat menekan GPU perangkat kelas bawah. */
+@media (max-width:768px) {
+  .bg-ambient::before { display:none; }
+  .bg-ambient::after { animation:none; opacity:.7; }
+}
+
 /* ---------- Progress bar scroll ---------- */
 .scroll-progress-track { position:fixed; inset-inline:0; top:0; z-index:60; height:2px; background:rgba(255,255,255,.06); }
 .scroll-progress-bar { height:100%; background:linear-gradient(90deg,#AD2C20,#FF6E4C,#AD2C20); box-shadow:0 0 10px rgba(255,110,76,.6); transition:width .12s linear; }
@@ -223,15 +246,8 @@ section[id] { scroll-margin-top:7rem; }
 .ticker { animation:tickerScroll 24s linear infinite; }
 @keyframes tickerScroll { from { transform:translateX(0); } to { transform:translateX(-50%); } }
 
-/* ---------- Judul berpendar (pulse) ---------- */
-.glow-title { animation:titlePulse 4.5s ease-in-out infinite; }
-@keyframes titlePulse {
-  0%, 100% { text-shadow:0 0 18px rgba(255,255,255,.28); }
-  50%      { text-shadow:0 0 30px rgba(255,255,255,.5), 0 0 58px rgba(239,75,54,.28); }
-}
-
-/* ---------- Tilt 3D pada stack poster hero ---------- */
-.stack { transition:transform .35s cubic-bezier(.22,1,.36,1); will-change:transform; }
+/* ---------- Tilt 3D pada stack poster hero (hanya aktif di desktop, lihat HeroSection.vue) ---------- */
+.stack { transition:transform .35s cubic-bezier(.22,1,.36,1); }
 
 /* ---------- Sapuan cahaya (sheen) di tombol ---------- */
 .btn-solid, .btn-outline, .btn-black, .store-badge { position:relative; overflow:hidden; isolation:isolate; }
@@ -248,6 +264,6 @@ section[id] { scroll-margin-top:7rem; }
 .page-enter-from, .page-leave-to { opacity:0; transform:translateY(14px); }
 
 @media (prefers-reduced-motion:reduce) {
-  .bg-ambient::before, .bg-ambient::after, .ticker, .glow-title, .stack { animation:none !important; transition:none !important; }
+  .bg-ambient::before, .bg-ambient::after, .ticker, .stack { animation:none !important; transition:none !important; }
   .page-enter-active, .page-leave-active { transition:none; }
 }

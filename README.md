@@ -146,31 +146,68 @@ Untuk produksi, ganti `ADMIN_PASSWORD` dan `SESSION_SECRET` dengan nilai yang ku
 
 ---
 
-## Animasi & nuansa futuristik
+## Animasi (ringan, tanpa library eksternal)
 
-Beranda sekarang punya beberapa lapis animasi, semuanya dibuat ringan (CSS + GSAP yang sudah ada di `package.json`, tidak ada dependency baru):
+Sempat dicoba pakai GSAP + ScrollTrigger untuk animasi, tapi ternyata bikin HP berat — jadi semua diganti ke pendekatan native browser (CSS + `IntersectionObserver` + `requestAnimationFrame` seperlunya), **tidak ada dependency JS animasi sama sekali**:
 
-- **Reveal saat scroll** — tiap section (Mahasiswa, Gallery, Info & Agenda, Tentang Kami, Kontak) muncul fade + geser naik begitu masuk layar (GSAP ScrollTrigger, diimpor dinamis di client saja).
-- **Progress bar** — garis tipis di paling atas menunjukkan seberapa jauh halaman sudah discroll.
-- **Latar ambient** — grid garis halus & glow oranye yang bergerak sangat lambat di belakang seluruh halaman, memberi kedalaman tanpa mengganggu keterbacaan.
-- **Statistik count-up** — jumlah Mahasiswa, Album Gallery, dan Info & Agenda dihitung naik dari 0 saat pertama terlihat, diambil langsung dari data asli di database.
-- **Ticker berjalan** — teks berjalan "TEKNIK INFORMATIKA 25 C • SOLID & KOMPAK • ANGKATAN 2025" di sebelah statistik.
-- **Tilt 3D pada poster Hero** — kartu poster miring mengikuti posisi kursor (desktop saja).
-- **Judul berpendar** — efek glow pada judul section berdenyut halus.
-- **Sapuan cahaya di tombol** — highlight tipis melintas saat tombol di-hover.
-- **Transisi antar halaman** — pindah ke halaman detail Mahasiswa/Gallery terasa mulus (fade + geser), bukan lompat instan.
+- **Reveal saat scroll** — tiap section fade + geser naik saat masuk layar, murni `IntersectionObserver` + CSS transition.
+- **Intro Hero** — judul, poster, search bar muncul dari 4 arah berbeda memakai CSS `@keyframes` (jalan otomatis saat halaman render, tanpa JS).
+- **Statistik count-up** — angka Mahasiswa/Gallery/Info menghitung naik sekali saat pertama terlihat (loop `requestAnimationFrame` pendek ~1.2 detik, lalu berhenti — bukan animasi terus-menerus).
+- **Auto-geser carousel Mahasiswa** — melompat satu kartu tiap 3 detik pakai `scrollBy({ behavior: "smooth" })` bawaan browser, **bukan** menulis `scrollLeft` tiap frame. Otomatis berhenti total kalau section digulung keluar layar (`IntersectionObserver`) atau tab tidak aktif — tidak ada kerja tersembunyi di latar belakang.
+- **Ticker & progress bar** — animasi CSS murni (`transform`), berjalan di GPU, praktis tanpa biaya CPU.
+- **Tilt 3D poster Hero** — mengikuti kursor, hanya aktif di desktop (dicek lewat `pointer: fine`), nol biaya di HP.
 
-Semua animasi otomatis dimatikan kalau pengguna mengaktifkan preferensi **"reduce motion"** di sistem operasinya, dan tidak ada animasi tambahan di halaman `/admin` (biar tetap gesit untuk kerja input data).
+Semua otomatis nonaktif kalau pengguna mengaktifkan **"reduce motion"** di sistemnya.
 
-## Performa & responsivitas
+## Performa & responsivitas (khusus HP kelas bawah)
 
-- Halaman publik dirender SSR (cepat & ringan saat pertama dibuka), halaman `/admin` dirender client-only (tidak perlu SSR untuk panel admin).
+Situs sempat terasa berat di HP karena beberapa efek visual yang costly di GPU/CPU perangkat lawas. Sudah diperbaiki:
+
+- **Dihapus total: GSAP + ScrollTrigger** (dua chunk JS, cukup besar untuk diunduh & dieksekusi di HP). Semua animasi sekarang native browser.
+- **Carousel Mahasiswa** — sebelumnya menulis `scrollLeft` di **setiap frame, selamanya** (60x/detik, memaksa browser menghitung ulang layout terus-menerus, bahkan saat carousel sudah tidak terlihat). Sekarang cuma "melompat" satu kartu tiap 3 detik, dan berhenti total kalau tidak sedang terlihat di layar.
+- **Blur di navbar** (`backdrop-filter`) dikecilkan, dan **dimatikan total di layar ≤640px** (diganti warna solid semi-transparan) — blur pada elemen *sticky* yang di-scroll adalah salah satu penyebab lag paling umum di HP.
+- **Latar grid animasi** di belakang halaman **dimatikan di layar ≤768px** (dua layer full-layar yang animasi terus-menerus lumayan berat untuk GPU HP kelas bawah); di desktop tetap ada tapi ringan (hanya `transform`, di-composite GPU).
+- **Efek "berpendar" pada judul** yang tadinya animasi terus-menerus (`text-shadow` yang di-animate itu mahal, bikin browser repaint tiap frame) — dikembalikan ke statis.
+- Halaman `/admin` tidak memuat animasi tambahan apa pun — tetap gesit untuk kerja input data.
 - Tidak ada ORM berat — query SQL langsung ke Turso lewat `@libsql/client`.
-- Carousel Mahasiswa & rotasi Poster memakai `requestAnimationFrame`/CSS transform, ringan dan menghormati preferensi `prefers-reduced-motion`.
-- Semua layout dibangun mobile-first dengan Tailwind (`sm:`, `lg:` breakpoints) — sudah diuji pada semua ukuran umum: HP kecil, HP besar, tablet, laptop, dan layar lebar.
-- GSAP hanya digunakan untuk animasi intro sekali di awal (tree-shakeable, ringan).
+- Semua layout dibangun mobile-first dengan Tailwind (`sm:`, `lg:` breakpoints) dan sudah diuji pada ukuran umum: HP kecil, HP besar, tablet, laptop, layar lebar.
 
----
+Kalau setelah update ini masih terasa berat di HP tertentu, kemungkinan besar penyebabnya foto berukuran besar yang diunggah lewat admin (belum ada resize otomatis) — kompres dulu foto sebelum diunggah, idealnya di bawah ~500KB per foto.
+
+## SEO & daftar ke Google Search Console
+
+Situs sudah disiapkan agar mudah ditemukan untuk pencarian seperti **"Teknik Informatika UNPER"**, **"TI25C"**, **"TI 25 C"**, dan sejenisnya:
+
+- Meta `title`, `description`, dan `keywords` di tiap halaman (beranda, halaman mahasiswa, halaman gallery — masing-masing otomatis dibuat dari datanya sendiri).
+- Open Graph & Twitter Card lengkap (judul, deskripsi, gambar) — supaya link yang dibagikan ke WhatsApp/Instagram/Twitter tampil bagus dengan pratinjau gambar (`public/og-image.jpg`, sudah dibuatkan dengan warna & identitas TI 25 C).
+- `canonical` URL di tiap halaman.
+- Data terstruktur (JSON-LD) di beranda supaya Google lebih paham situs ini tentang apa.
+- `/admin` otomatis diberi header `X-Robots-Tag: noindex` + di-*disallow* di `robots.txt` — supaya panel admin tidak muncul di hasil pencarian.
+- `sitemap.xml` **dinamis** (`server/routes/sitemap.xml.ts`) — otomatis memuat semua halaman mahasiswa & gallery langsung dari database, tidak perlu di-update manual tiap kali data admin berubah. Cek di `https://www.ti25c.web.id/sitemap.xml` setelah deploy.
+- `robots.txt` sudah tersedia di `public/robots.txt`, menunjuk ke sitemap di atas.
+
+### Langkah daftar ke Google Search Console
+
+1. Buka [Google Search Console](https://search.google.com/search-console) → **Tambahkan properti** → pilih **"Awalan URL"** → masukkan `https://www.ti25c.web.id`.
+2. Pilih metode verifikasi **"Tag HTML"**. Search Console akan memberi kode seperti:
+   ```html
+   <meta name="google-site-verification" content="XXXXXXXXXXXXXXXXXXXX" />
+   ```
+   Salin bagian `content="..."`-nya, tempel ke `.env`:
+   ```env
+   GOOGLE_SITE_VERIFICATION=XXXXXXXXXXXXXXXXXXXX
+   ```
+   Deploy ulang (atau restart server produksi), lalu klik **Verifikasi** di Search Console.
+   *(Alternatif: verifikasi lewat TXT record di DNS domain — juga valid, tidak perlu ubah apa pun di kode.)*
+3. Setelah terverifikasi, buka menu **Sitemaps** di sidebar kiri → masukkan `sitemap.xml` → **Kirim**.
+4. Buka menu **Pemeriksaan URL**, masukkan `https://www.ti25c.web.id/`, klik **Minta pengindeksan** supaya beranda dicek lebih cepat (biasanya masih perlu beberapa hari sampai muncul di hasil pencarian).
+5. Pastikan `NUXT_PUBLIC_SITE_URL` di `.env` produksi sudah persis `https://www.ti25c.web.id` (atau `https://ti25c.web.id` kalau tanpa `www`, sesuaikan mana yang jadi domain utama) — semua meta tag, canonical, dan sitemap mengikuti nilai ini.
+
+### Kata kunci yang sudah ditarget
+
+Sudah dimasukkan ke meta `description`/`keywords` beranda: *TI25C, TI 25 C, Teknik Informatika UNPER, Teknik Informatika Universitas Perjuangan Tasikmalaya, Universitas Perjuangan Tasikmalaya, UNPER Tasikmalaya, mahasiswa Teknik Informatika 25 C*. Mau menambah kata kunci lain? Edit array `meta` di `nuxt.config.ts` (bagian `app.head.meta`) atau `useSeoMeta` di `pages/index.vue`.
+
+> Catatan: mengisi meta keywords saja tidak otomatis membuat situs ranking tinggi — yang paling berpengaruh adalah **konten asli** (isi data mahasiswa, deskripsi, foto kegiatan) dan **backlink** (link ke situs ini dari Instagram/media sosial kampus, grup WhatsApp, dsb). Sitemap + verifikasi Search Console di atas hanya memastikan Google *bisa* menemukan & mengindeks halamannya.
 
 ## Build untuk produksi
 

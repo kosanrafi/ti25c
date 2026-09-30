@@ -25,8 +25,27 @@ const skillList = computed(() =>
     .filter(Boolean)
 )
 
+const config = useRuntimeConfig()
+const siteUrl = config.public.siteUrl
+const pageUrl = computed(() => `${siteUrl}/mahasiswa/${route.params.id}`)
+const seoDescription = computed(() =>
+  data.value
+    ? `${data.value.name} — ${data.value.role || 'Mahasiswa'} Teknik Informatika 25 C (TI25C), Universitas Perjuangan Tasikmalaya.${data.value.description ? ' ' + data.value.description : ''}`.slice(0, 160)
+    : 'Profil mahasiswa Teknik Informatika 25 C (TI25C), Universitas Perjuangan Tasikmalaya.'
+)
+
+useSeoMeta({
+  title: () => (data.value ? `${data.value.name} — TI 25 C` : 'Mahasiswa — TI 25 C'),
+  description: () => seoDescription.value,
+  ogTitle: () => (data.value ? `${data.value.name} — TI 25 C` : 'Mahasiswa — TI 25 C'),
+  ogDescription: () => seoDescription.value,
+  ogImage: () => (data.value?.photo ? `${siteUrl}${data.value.photo}` : `${siteUrl}/og-image.jpg`),
+  ogUrl: () => pageUrl.value,
+  ogType: 'profile',
+  twitterCard: 'summary_large_image'
+})
 useHead(() => ({
-  title: data.value ? `${data.value.name} — TI 25 C` : 'Mahasiswa — TI 25 C'
+  link: [{ rel: 'canonical', href: pageUrl.value }]
 }))
 </script>
 
