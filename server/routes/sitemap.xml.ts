@@ -28,6 +28,10 @@ export default defineEventHandler(async (event) => {
 
   const urls: { loc: string; lastmod: string; priority: string; changefreq: string }[] = [
     { loc: `${siteUrl}/`, lastmod: today, priority: '1.0', changefreq: 'weekly' },
+    { loc: `${siteUrl}/mahasiswa`, lastmod: today, priority: '0.8', changefreq: 'weekly' },
+    { loc: `${siteUrl}/gallery`, lastmod: today, priority: '0.8', changefreq: 'weekly' },
+    { loc: `${siteUrl}/agenda`, lastmod: today, priority: '0.8', changefreq: 'weekly' },
+    { loc: `${siteUrl}/kontak`, lastmod: today, priority: '0.7', changefreq: 'monthly' },
     ...mahasiswa.map(m => ({
       loc: `${siteUrl}/mahasiswa/${m.id}`,
       lastmod: toDate(m.updated),

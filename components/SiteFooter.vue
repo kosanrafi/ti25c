@@ -11,12 +11,12 @@
 
       <nav aria-label="Jelajahi">
         <ul class="space-y-3">
-          <li><a href="#home" class="foot-link">Home</a></li>
-          <li><a href="#mahasiswa" class="foot-link">Mahasiswa</a></li>
-          <li><a href="#gallery" class="foot-link">Gallery Moment</a></li>
-          <li><a href="#info" class="foot-link">Info Kelas</a></li>
-          <li><a href="#tentang" class="foot-link">Tentang Kami</a></li>
-          <li><a href="#kontak" class="foot-link">Kontak</a></li>
+          <li><NuxtLink to="/" class="foot-link">Home</NuxtLink></li>
+          <li><NuxtLink to="/mahasiswa" class="foot-link">Mahasiswa</NuxtLink></li>
+          <li><NuxtLink to="/gallery" class="foot-link">Gallery Moment</NuxtLink></li>
+          <li><NuxtLink to="/agenda" class="foot-link">Agenda</NuxtLink></li>
+          <li><NuxtLink to="/#tentang" class="foot-link">Tentang Kami</NuxtLink></li>
+          <li><NuxtLink to="/kontak" class="foot-link">Kontak</NuxtLink></li>
         </ul>
       </nav>
 

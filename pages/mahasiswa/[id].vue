@@ -52,7 +52,7 @@ useHead(() => ({
 <template>
   <div v-if="data" class="px-4 pb-24 pt-28 sm:px-6 sm:pt-32">
     <div class="mx-auto max-w-4xl">
-      <NuxtLink to="/#mahasiswa" class="inline-flex items-center gap-2 text-sm font-semibold text-white/70 transition-colors hover:text-white">
+      <NuxtLink to="/mahasiswa" class="inline-flex items-center gap-2 text-sm font-semibold text-white/70 transition-colors hover:text-white">
         <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18"/></svg>
         Kembali ke Mahasiswa
       </NuxtLink>
@@ -94,10 +94,10 @@ useHead(() => ({
               </div>
             </div>
 
-            <a href="#kontak" class="btn-outline mt-8 inline-flex w-fit px-6">
+            <NuxtLink to="/kontak" class="btn-outline mt-8 inline-flex w-fit px-6">
               <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 0 1-2.555-.337A5.972 5.972 0 0 1 5.41 20.97a5.969 5.969 0 0 1-.474-.065 4.48 4.48 0 0 0 .978-2.025c.09-.457-.133-.901-.467-1.226C3.93 16.178 3 14.189 3 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25Z"/></svg>
               Kontak Kelas
-            </a>
+            </NuxtLink>
           </div>
         </div>
       </div>

@@ -67,7 +67,7 @@ useHead(() => ({
 <template>
   <div v-if="data" class="px-4 pb-24 pt-28 sm:px-6 sm:pt-32">
     <div class="mx-auto max-w-5xl">
-      <NuxtLink to="/#gallery" class="inline-flex items-center gap-2 text-sm font-semibold text-white/70 transition-colors hover:text-white">
+      <NuxtLink to="/gallery" class="inline-flex items-center gap-2 text-sm font-semibold text-white/70 transition-colors hover:text-white">
         <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18"/></svg>
         Kembali ke Gallery
       </NuxtLink>
