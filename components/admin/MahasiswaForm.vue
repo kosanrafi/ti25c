@@ -9,12 +9,14 @@ const props = defineProps<{
     skills: string
     sertifikat: string
     photo: string
+    instagram?: string
+    tiktok?: string
     sort_order: number
   }
 }>()
 const emit = defineEmits<{ close: []; saved: [] }>()
 
-const form = reactive({ ...props.modelValue })
+const form = reactive({ ...props.modelValue, instagram: props.modelValue.instagram || '', tiktok: props.modelValue.tiktok || '' })
 const saving = ref(false)
 const errorMsg = ref('')
 
@@ -85,6 +87,17 @@ async function submit() {
         <div>
           <label class="field-label">Sertifikat</label>
           <textarea v-model="form.sertifikat" rows="2" class="field-textarea" placeholder="Contoh: Sertifikat Dicoding - Belajar Dasar Pemrograman Web"></textarea>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="field-label">Instagram <span class="font-normal text-white/40">(username / link)</span></label>
+            <input v-model="form.instagram" type="text" class="field-input" placeholder="@username" />
+          </div>
+          <div>
+            <label class="field-label">TikTok <span class="font-normal text-white/40">(username / link)</span></label>
+            <input v-model="form.tiktok" type="text" class="field-input" placeholder="@username" />
+          </div>
         </div>
 
         <div>

@@ -8,6 +8,8 @@ interface Mahasiswa {
   skills: string
   sertifikat: string
   photo: string
+  instagram?: string
+  tiktok?: string
 }
 
 const route = useRoute()
@@ -94,10 +96,10 @@ useHead(() => ({
               </div>
             </div>
 
-            <NuxtLink to="/kontak" class="btn-outline mt-8 inline-flex w-fit px-6">
-              <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 0 1-2.555-.337A5.972 5.972 0 0 1 5.41 20.97a5.969 5.969 0 0 1-.474-.065 4.48 4.48 0 0 0 .978-2.025c.09-.457-.133-.901-.467-1.226C3.93 16.178 3 14.189 3 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25Z"/></svg>
-              Kontak Kelas
-            </NuxtLink>
+            <div v-if="data.instagram || data.tiktok" class="mt-8">
+              <p class="text-xs font-semibold uppercase tracking-wide text-white/50">Media Sosial</p>
+              <SocialButtons class="mt-2" :instagram="data.instagram" :tiktok="data.tiktok" detailed />
+            </div>
           </div>
         </div>
       </div>

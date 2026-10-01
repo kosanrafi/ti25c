@@ -11,6 +11,8 @@ interface Mhs {
   skills: string
   sertifikat: string
   photo: string
+  instagram?: string
+  tiktok?: string
   sort_order: number
 }
 
@@ -28,7 +30,7 @@ const filtered = computed(() => {
 })
 
 const emptyForm = (): Omit<Mhs, 'id'> & { id?: number } => ({
-  name: '', role: 'Mahasiswa', role_id: 5, description: '', hobi: '', skills: '', sertifikat: '', photo: '',
+  name: '', role: 'Mahasiswa', role_id: 5, description: '', hobi: '', skills: '', sertifikat: '', photo: '', instagram: '', tiktok: '',
   sort_order: (list.value?.length || 0)
 })
 

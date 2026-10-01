@@ -26,6 +26,8 @@ CREATE TABLE IF NOT EXISTS mahasiswa (
   skills      TEXT DEFAULT '',
   sertifikat  TEXT DEFAULT '',
   photo       TEXT DEFAULT '',
+  instagram   TEXT DEFAULT '',
+  tiktok      TEXT DEFAULT '',
   sort_order  INTEGER DEFAULT 0,
   created_at  TEXT DEFAULT (datetime('now'))
 );

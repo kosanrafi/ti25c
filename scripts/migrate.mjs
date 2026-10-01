@@ -51,6 +51,13 @@ if (reset) {
 
 await run('Membuat tabel', parseSql(readFileSync(join(dbDir, 'schema.sql'), 'utf8')))
 
+// Tabel lama (dibuat sebelum ada kolom media sosial) -> tambahkan kolom jika belum ada
+const cols = (await client.execute('PRAGMA table_info(mahasiswa)')).rows.map(r => String(r.name))
+const missing = ['instagram', 'tiktok'].filter(c => !cols.includes(c))
+if (missing.length) {
+  await run('Menambah kolom media sosial', missing.map(c => `ALTER TABLE mahasiswa ADD COLUMN ${c} TEXT DEFAULT ''`))
+}
+
 if (seed) {
   await run('Mengisi data awal', parseSql(readFileSync(join(dbDir, 'seed.sql'), 'utf8')))
 }
